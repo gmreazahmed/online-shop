@@ -112,7 +112,7 @@ const NavBar = ({ searchTerm, setSearchTerm, cart }) => {
         <div className="flex items-center gap-5">
           <button
             onClick={handleLoginLogout}
-            className="px-4 py-2 rounded bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-medium shadow hover:shadow-md transition"
+            className="px-4 py-2 rounded text-black text-sm font-medium shadow hover:shadow-md transition"
           >
             {isLoggedIn ? "Logout" : "Login"}
           </button>

@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NavBar from "./components/NavBar";
 import BebidasPage from "./pages/BebidasPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
@@ -12,14 +12,25 @@ import NotFoundPage from "./pages/NotFoundPage";
 
 function AppContent() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(JSON.parse(localStorage.getItem("cart")) || []);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")) || null);
   const [addresses, setAddresses] = useState([]);
 
   const location = useLocation();
 
   // hide NavBar + Footer on these routes
-  const hideLayoutRoutes = ["/login"];
+  const hideLayoutRoutes = new Set(["/login"]);
+
+  // Sync cart to localStorage
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
+  // Sync user to localStorage
+  useEffect(() => {
+    if (user) localStorage.setItem("user", JSON.stringify(user));
+    else localStorage.removeItem("user");
+  }, [user]);
 
   // Cart Functions
   const addToCart = (product) => {
@@ -35,18 +46,10 @@ function AppContent() {
     });
   };
 
-  const increment = (id) => {
+  const updateQuantity = (id, delta) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  };
-
-  const decrement = (id) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(item.quantity - 1, 1) } : item
+        item.id === id ? { ...item, quantity: Math.max(item.quantity + delta, 1) } : item
       )
     );
   };
@@ -57,7 +60,7 @@ function AppContent() {
 
   return (
     <>
-      {!hideLayoutRoutes.includes(location.pathname) && (
+      {!hideLayoutRoutes.has(location.pathname) && (
         <NavBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} cart={cart} />
       )}
 
@@ -79,8 +82,8 @@ function AppContent() {
           element={
             <CartPage
               cart={cart}
-              increment={increment}
-              decrement={decrement}
+              increment={(id) => updateQuantity(id, 1)}
+              decrement={(id) => updateQuantity(id, -1)}
               removeItem={removeItem}
             />
           }
@@ -97,7 +100,7 @@ function AppContent() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
 
-      {!hideLayoutRoutes.includes(location.pathname) && <Footer />}
+      {!hideLayoutRoutes.has(location.pathname) && <Footer />}
     </>
   );
 }
