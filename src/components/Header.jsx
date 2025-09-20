@@ -5,7 +5,6 @@ const Header = () => {
 
   return (
     <div className='bg-white'>
-      
       <NavBar/>
     </div>
   );

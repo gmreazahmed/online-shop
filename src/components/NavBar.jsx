@@ -1,5 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { FiSearch, FiShoppingCart, FiChevronDown, FiMail, FiPhone } from "react-icons/fi";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  FiSearch,
+  FiShoppingCart,
+  FiChevronDown,
+  FiMail,
+  FiPhone,
+} from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 const locales = [
@@ -15,7 +21,7 @@ const NavBar = ({ searchTerm, setSearchTerm, cart }) => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // Set default locale based on browser
+  // Default locale
   useEffect(() => {
     const browserLang = new Intl.Locale(navigator.language).language;
     const match = locales.find(
@@ -25,8 +31,10 @@ const NavBar = ({ searchTerm, setSearchTerm, cart }) => {
   }, []);
 
   const intlLocale = new Intl.Locale(selectedLocale);
-  const langName = new Intl.DisplayNames([selectedLocale], { type: "language" }).of(intlLocale.language);
-  const otherLocales = locales.filter(loc => loc !== selectedLocale);
+  const langName = new Intl.DisplayNames([selectedLocale], {
+    type: "language",
+  }).of(intlLocale.language);
+  const otherLocales = locales.filter((loc) => loc !== selectedLocale);
 
   const handleLoginLogout = () => {
     if (isLoggedIn) {
@@ -37,31 +45,7 @@ const NavBar = ({ searchTerm, setSearchTerm, cart }) => {
     }
   };
 
-  // Scroll hide/show states
-  const [scrolled, setScrolled] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [prevScrollPos, setPrevScrollPos] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollPos = window.scrollY;
-      setScrolled(currentScrollPos > 50);
-
-      if (currentScrollPos < 50) {
-        setIsVisible(true);
-      } else if (currentScrollPos > prevScrollPos) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-      setPrevScrollPos(currentScrollPos);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [prevScrollPos]);
-
-  // Close dropdown when clicking outside
+  // Close dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -73,31 +57,33 @@ const NavBar = ({ searchTerm, setSearchTerm, cart }) => {
   }, []);
 
   return (
-    <nav
-     
-    >
+    <nav className="w-full border-b shadow-sm sticky top-0 bg-white z-50">
       {/* Top bar */}
-      <div className="flex items-center justify-between container mx-auto py-5 sm:px-0 px-6">
+      <div className="flex items-center justify-between container mx-auto py-3 px-4 text-sm">
         <div className="flex items-center gap-4 relative">
-          {/* Language Switcher */}
+          {/* Language */}
           <div className="relative" ref={dropdownRef}>
             <button
-              onClick={() => setDropdownOpen(prev => !prev)}
-              className="flex items-center gap-2 border px-3 py-2 rounded-md shadow-sm hover:bg-gray-100 transition"
+              onClick={() => setDropdownOpen((prev) => !prev)}
+              className="flex items-center gap-1 border px-3 py-1.5 rounded-md hover:bg-gray-100 text-sm"
             >
               <span className="capitalize">{langName}</span>
-              <FiChevronDown className="text-gray-600" />
+              <FiChevronDown className="text-gray-600 text-base" />
             </button>
 
             {dropdownOpen && (
-              <ul className="absolute mt-2 bg-white shadow-lg rounded-md border w-40 max-h-56 overflow-y-auto z-50">
-                {otherLocales.map(locale => {
+              <ul className="absolute mt-2 bg-white shadow-lg rounded-md border w-36 max-h-48 overflow-y-auto z-50 text-sm">
+                {otherLocales.map((locale) => {
                   const otherIntl = new Intl.Locale(locale);
-                  const otherLangName = new Intl.DisplayNames([locale], { type: "language" }).of(otherIntl.language);
+                  const otherLangName = new Intl.DisplayNames([locale], {
+                    type: "language",
+                  }).of(otherIntl.language);
                   return (
                     <li
                       key={locale}
-                      className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${selectedLocale === locale ? "bg-gray-50 font-medium" : ""}`}
+                      className={`px-3 py-1.5 cursor-pointer hover:bg-gray-100 ${
+                        selectedLocale === locale ? "bg-gray-50 font-medium" : ""
+                      }`}
                       onClick={() => {
                         setSelectedLocale(locale);
                         setDropdownOpen(false);
@@ -111,25 +97,30 @@ const NavBar = ({ searchTerm, setSearchTerm, cart }) => {
             )}
           </div>
 
-          {/* Email & Phone */}
-          <p className="hidden lg:flex items-center gap-1 text-gray-700">
-            <FiMail className="text-gray-500" /> <a href="mailto:webzedcontact@gmail.com">Mail: webzedcontact@gmail.com</a>
+          {/* Contact */}
+          <p className="hidden lg:flex items-center gap-1 text-gray-600 text-sm">
+            <FiMail className="text-gray-500" />{" "}
+            <a href="mailto:webzedcontact@gmail.com">webzedcontact@gmail.com</a>
           </p>
-          <p className="hidden sm:flex items-center gap-1 text-gray-700">
-            <FiPhone className="text-gray-500" /> <a href="tel:4534345656">Helpline: 4534345656</a>
+          <p className="hidden sm:flex items-center gap-1 text-gray-600 text-sm">
+            <FiPhone className="text-gray-500" />{" "}
+            <a href="tel:4534345656">4534345656</a>
           </p>
         </div>
 
-        {/* Login & Cart */}
-        <div className="flex items-center gap-6">
+        {/* Login + Cart */}
+        <div className="flex items-center gap-5">
           <button
             onClick={handleLoginLogout}
-            className="relative overflow-hidden px-5 py-2 rounded bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow-lg hover:shadow-xl transition-all"
+            className="px-4 py-2 rounded bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-medium shadow hover:shadow-md transition"
           >
             {isLoggedIn ? "Logout" : "Login"}
           </button>
 
-          <div className="relative cursor-pointer" onClick={() => navigate("/cart")}>
+          <div
+            className="relative cursor-pointer"
+            onClick={() => navigate("/cart")}
+          >
             <FiShoppingCart className="text-2xl" />
             {cart && cart.length > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1 rounded-full">
@@ -141,14 +132,17 @@ const NavBar = ({ searchTerm, setSearchTerm, cart }) => {
       </div>
 
       {/* Main navbar */}
-      <div className="border-t flex items-center py-5 px-6 shadow-sm">
-        <div className="container mx-auto flex items-center gap-6">
+      <div className="flex items-center py-3 px-4">
+        <div className="container mx-auto flex items-center gap-4">
           {/* Logo */}
-          <div className="cursor-pointer flex-shrink-0" onClick={() => navigate("/")}>
+          <div
+            className="cursor-pointer flex-shrink-0"
+            onClick={() => navigate("/")}
+          >
             <img
               src="https://shop.sprwforge.com/uploads/header-logo.svg"
               alt="Logo"
-              className="w-auto h-10"
+              className="w-auto h-9"
             />
           </div>
 
@@ -156,12 +150,12 @@ const NavBar = ({ searchTerm, setSearchTerm, cart }) => {
           <div className="relative flex-1">
             <input
               type="text"
-              placeholder="Search Here"
+              placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full shadow-md border border-gray-300 px-10 py-3 rounded-xl outline-none focus:ring-1 focus:ring-blue-700"
+              className="w-full border border-gray-300 pl-3 pr-10 py-2.5 rounded-lg text-base outline-none focus:ring-1 focus:ring-blue-600"
             />
-            <FiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <FiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg" />
           </div>
         </div>
       </div>
