@@ -12,14 +12,14 @@ const Ourallproduct = ({ products }) => {
   }
 
   return (
-    <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
       {products.map((product) => (
-        <li
+        <div
           key={product.id}
-          className="bg-white rounded-xl shadow-md cursor-pointer overflow-hidden"
+          className="cursor-pointer flex flex-col"
           onClick={() => navigate(`/product/${product.id}`)}
         >
-          <div className="relative w-full h-[220px] sm:h-[240px] md:h-[260px] lg:h-[280px] overflow-hidden rounded-t-xl">
+          <div className="relative w-full h-[180px] sm:h-[200px] md:h-[220px] lg:h-[240px] overflow-hidden rounded-lg shadow">
             <img
               src={`https://shop.sprwforge.com/uploads/${product.image}`}
               alt={product.title}
@@ -29,18 +29,19 @@ const Ourallproduct = ({ products }) => {
               €{product.selling}
             </span>
           </div>
-          <div className="p-3 text-center">
-            <h2 className="text-sm sm:text-[13px] md:text-[14px] lg:text-[15px] font-semibold text-gray-800 truncate">
-              {product.title}
-            </h2>
-            <p className="mt-1 text-gray-500 text-xs sm:text-sm">
-              {product.description?.slice(0, 50)}
-              {product.description && product.description.length > 50 ? "..." : ""}
+          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-gray-800 mb-2 hover:text-red-500 text-center">
+            {product.title}
+          </h2>
+
+          {product.description && (
+            <p className="mt-2 text-gray-600 text-xs sm:text-sm text-center">
+              {product.description.slice(0, 50)}
+              {product.description.length > 50 ? "..." : ""}
             </p>
-          </div>
-        </li>
+          )}
+        </div>
       ))}
-    </ul>
+    </div>
   );
 };
 
